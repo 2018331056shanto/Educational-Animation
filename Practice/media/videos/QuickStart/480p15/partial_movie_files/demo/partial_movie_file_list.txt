@@ -1,3 +1,0 @@
-# This file is used internally by FFMPEG.
-file 'file:/media/ashraful-islam/Technyx/Educational Animation/Practice/media/videos/QuickStart/480p15/partial_movie_files/demo/1185818338_656260998_3184615415.mp4'
-file 'file:/media/ashraful-islam/Technyx/Educational Animation/Practice/media/videos/QuickStart/480p15/partial_movie_files/demo/624642324_4217992463_1439037315.mp4'

@@ -1,1 +1,3 @@
 manim-env
+**/media/**
+**/__pycache__/** 

@@ -53,8 +53,8 @@ class ArrowConnector(VGroup):
         mapping = {
             "left": obj.get_left,
             "right": obj.get_right,
-            "top": obj.get_top,
-            "bottom": obj.get_bottom,
+            "up": obj.get_top,
+            "down": obj.get_bottom,
             "center": obj.get_center,
         }
         return mapping.get(direction, obj.get_center)()

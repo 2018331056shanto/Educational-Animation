@@ -28,6 +28,15 @@ class Memory(VGroup):
             label.move_to([x_pos, y_pos, 0])
             self.index_labels.add(label)
 
+        self.index_labels_down=VGroup()
+        for i in range(num_slots):
+            label = Text(str("_"), color=WHITE).scale(0.3)
+            x_pos = -width / 2 + (i + 0.5) * self.slot_width
+            y_pos = -height / 2-.2
+            label.move_to([x_pos, y_pos, 0])
+            self.index_labels_down.add(label)
+
+
         # Create value labels
         self.value_labels = VGroup()
         for i in range(num_slots):
@@ -40,7 +49,7 @@ class Memory(VGroup):
 
         # Add all components to the group
         
-        self.add(self.rects, self.index_labels, self.value_labels)
+        self.add(self.rects, self.index_labels, self.value_labels,self.index_labels_down)
 
     def set_value(self, index, new_value, color=YELLOW,factor=.35):
         """Set value at specific index"""
@@ -49,6 +58,14 @@ class Memory(VGroup):
             new_tex = Tex(str(new_value), color=color).scale(factor)
             new_tex.move_to(current_position)
             self.value_labels[index].become(new_tex)
+
+    def set_label_down(self, index, new_value, color=YELLOW,factor=.35):
+        """Set value at specific index"""
+        if 0 <= index < len(self.index_labels_down):
+            current_position = self.index_labels_down[index]
+            new_tex = Tex(str(new_value), color=color).scale(factor)
+            new_tex.move_to(current_position)
+            self.index_labels_down[index].become(new_tex)
 
     def get_value_label(self, index):
         """Get value label at specific index"""

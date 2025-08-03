@@ -97,12 +97,21 @@ class SegmentedMemory(VGroup):
 
         # 5. Store segment information
         self.segment_ranges = segments
+        self.nested_segments_by_parent = {}
+
 
     # Memory manipulation methods
     def set_value(self, index, new_value, color=YELLOW ,factor=.35):
         """Set value at specific memory index"""
         if hasattr(self.memory, 'set_value'):
             self.memory.set_value(index, new_value, color,factor)
+        else:
+            print(f"Memory object missing set_value method")
+
+    def set_label_down(self, index, new_value, color=YELLOW ,factor=.35):
+        """Set value at specific memory index"""
+        if hasattr(self.memory, 'set_value'):
+            self.memory.set_label_down(index, new_value, color,factor)
         else:
             print(f"Memory object missing set_value method")
 
@@ -238,3 +247,128 @@ class SegmentedMemory(VGroup):
                     self.clear_value(i)
                     return old_value, i
         return None, None
+    
+    # def add_nested_segment(
+    #     self,
+    #     parent_segment_index,
+    #     nested_start_offset,
+    #     nested_end_offset,
+    #     label="Nested",
+    #     color=WHITE,
+    #     fill_opacity=0.2,
+    #     stroke_width=1,
+    #     scale=0.2,
+    #     buff=0
+    # ):
+    #     if not (0 <= parent_segment_index < len(self.segments)):
+    #         print("Invalid parent segment index")
+    #         return
+
+    #     start, end = self.segment_ranges[parent_segment_index]
+    #     slot_width = self.width / self.num_slots
+
+    #     if start + nested_start_offset > start + nested_end_offset or start + nested_end_offset > end:
+    #         print("Invalid nested range")
+    #         return
+
+    #     nested_start_idx = start + nested_start_offset
+    #     nested_end_idx = start + nested_end_offset
+    #     num_slots = nested_end_idx - nested_start_idx 
+
+    #     nested_width = num_slots * slot_width
+
+    #     nested_rect = Rectangle(
+    #         width=nested_width,
+    #         height=self.height * scale,
+    #         color=color,
+    #         fill_opacity=fill_opacity,
+    #         stroke_width=stroke_width,
+    #     )
+    #     label_tex = Tex(label, color=color).scale(scale * 0.7)
+    #     label_tex.next_to(nested_rect, UP, buff=buff)
+
+    #     if not hasattr(self, "nested_segments"):
+    #         self.nested_segments = []
+
+    #     if len(self.nested_segments)==0:
+    #         nested_rect.move_to(self.segments[parent_segment_index],LEFT)
+    #     else:
+    #         nested_rect.next_to(self.nested_segments[len(self.nested_segments)-1][0],RIGHT,buff=0)
+    #     self.add(nested_rect, label_tex)
+        
+    #     self.nested_segments.append((nested_rect, label_tex))
+    
+    #     # Add to group
+     
+
+    #     # Track them
+        
+        
+
+    #     return nested_rect, label_tex
+    def add_nested_segment(
+    self,
+    parent_segment_index,
+    num_slots=1,
+    label="Nested",
+    color=WHITE,
+    fill_opacity=0.2,
+    stroke_width=1,
+    scale=0.2,
+    buff=0
+):
+        if not (0 <= parent_segment_index < len(self.segments)):
+            print("Invalid parent segment index")
+            return
+
+        slot_width = self.width / self.num_slots   
+
+        nested_width = num_slots * slot_width
+
+        nested_rect = Rectangle(
+            width=nested_width,
+            height=self.height * scale,
+            color=color,
+            fill_opacity=fill_opacity,
+            stroke_width=stroke_width,
+        )
+
+        if not hasattr(self, "nested_segments"):
+            self.nested_segments = []
+
+        # Position the nested rectangle
+        if len(self.nested_segments) == 0:
+            nested_rect.move_to(self.segments[parent_segment_index], LEFT)
+        else:
+            last_nested_rect = self.nested_segments[-1][0]
+            nested_rect.next_to(last_nested_rect, RIGHT, buff=0)
+
+        # Now that the rect is positioned, position the label relative to it
+        label_tex = Tex(label, color=color).scale(scale * 0.7)
+        label_tex.next_to(nested_rect, UP, buff=buff)
+
+        # Track and add to group
+        self.nested_segments.append((nested_rect, label_tex))
+        self.add(nested_rect, label_tex)
+
+        return nested_rect, label_tex
+
+    
+    def delete_nested_segment(self, scene, index):
+        if not hasattr(self, "nested_segments") or index >= len(self.nested_segments):
+            print(f"No nested segment at index {index}")
+            return
+
+        nested_rect, label_tex = self.nested_segments[index]
+        
+        # Play fade out animation
+        scene.play(FadeOut(nested_rect), FadeOut(label_tex))
+        
+        # 🔥 THIS IS CRITICAL
+        self.remove(nested_rect)
+        self.remove(label_tex)
+        
+        # Remove from tracking list
+        del self.nested_segments[index]
+
+   
